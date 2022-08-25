@@ -9,6 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from PIL import Image
+from loginRequired import loginRequired
 
 # Set up environment variables
 from dotenv import load_dotenv
