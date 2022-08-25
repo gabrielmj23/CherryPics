@@ -57,3 +57,16 @@ class SignUpForm(FlaskForm):
     pwLayout = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{8,15}$")
     if not re.fullmatch(pwLayout, self.password.data):
       raise ValidationError("Password needs a lowercase and uppercase letter, a number and a special character")
+
+
+# Form for Log In page
+class LogInForm(FlaskForm):
+  # Username field
+  username = StringField(label=('Username'), validators=[
+    InputRequired('Username is required')
+  ])
+
+  # Password field
+  password = PasswordField(label=('Password'), validators=[
+    InputRequired('Password is required')
+  ])

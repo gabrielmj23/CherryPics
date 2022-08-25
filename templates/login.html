@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Log in
+{% endblock %} 
+
+{% block main %}
+  <div class="container vh-100 auth-page">
+    <div class="row vh-100 align-items-center">
+      <div class="col-4"></div>
+
+      <div class="col-4">
+        <form class="form-control text-center p-4" action="/login" method="post">
+          <h1 class="fw-bold mb-3">Welcome to CherryPics</h1>
+          <hr/>
+          <h3 class="mb-3">Log In</h3>
+
+          <div class="form-group mb-3">
+            {{ form.csrf_token() }}
+            {{ form.username.label(class_="form-label") }}<br/>
+            {{ form.username(class_="p-1") }}
+          </div>
+
+          <div class="form-group mb-3">
+            {{ form.password.label(class_="form-label") }}<br/>
+            {{ form.password(class_="p-1") }}
+          </div>
+
+          <button class="btn btn-primary mb-2" type="submit">Log in</button>
+
+          {% if form.errors.items() %}
+            <ul>
+              {% for field, errors in form.errors.items() %}
+                <li class="text-danger">
+                  {{ ". ".join(errors) }}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+          <p>Don't have an account? <a href='/signup'>Sign up</a>.</p>
+        </form>
+      </div>
+
+      <div class="col-4"></div>
+    </div>
+  </div>
+{% endblock %}
