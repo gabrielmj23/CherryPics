@@ -51,7 +51,7 @@ def after_request(response):
 @loginRequired
 def index():
   # Get posts from database
-  db.execute('SELECT (id, description, image, like_count) FROM posts ORDER BY (posted_on) DESC')
+  db.execute('SELECT (id, description, image, like_count, posted_on) FROM posts ORDER BY (posted_on) DESC')
   dbConnection.commit()
   posts = db.fetchall()
 
