@@ -1,6 +1,7 @@
 import os
 import psycopg2
 import appForms
+import secrets
 
 from flask import Flask, request, render_template, redirect, session
 from flask_session import Session
@@ -43,6 +44,24 @@ def after_request(response):
   response.headers['Expires'] = 0
   response.headers['Pragma'] = 'no-cache'
   return response
+
+
+# INDEX ROUTE
+@app.route('/', methods=['GET'])
+@loginRequired
+def index():
+  # Get posts from database
+  db.execute('SELECT (id, description, image, like_count) FROM posts ORDER BY (posted_on) DESC')
+  dbConnection.commit()
+  posts = db.fetchall()
+
+  # If there are posts, select five or less at random for carousel
+  carouselPosts = []
+  if len(posts) > 0:
+    carouselPosts = secrets.SystemRandom().sample(posts, min(5, len(posts)))
+
+  # Render index page
+  return render_template('index.html', logged_in = True, userId = session['user_id'], carouselPosts = carouselPosts, posts = posts)
 
 
 # SIGN UP ROUTE
@@ -95,6 +114,7 @@ def signup():
     else:
       return render_template('signup.html', form=form)
 
+
 # LOG IN ROUTE
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -112,7 +132,6 @@ def login():
       foundUser = db.fetchone()
       
       # Check for login errors
-      print(foundUser)
       if foundUser == None or not check_password_hash(foundUser[2], request.form.get("password")):
         form.errors['db'] = ['Wrong username/password']
         return render_template('login.html', form = form)
