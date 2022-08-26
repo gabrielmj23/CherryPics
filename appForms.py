@@ -5,7 +5,7 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import InputRequired, Length, EqualTo, ValidationError
 import re
 
-# Form for Sign Up page
+# FORM FOR SIGN UP PAGE
 class SignUpForm(FlaskForm):
   # Username field
   username = StringField(label=('Username'), validators=[
@@ -59,7 +59,7 @@ class SignUpForm(FlaskForm):
       raise ValidationError("Password needs a lowercase and uppercase letter, a number and a special character")
 
 
-# Form for Log In page
+# FORM FOR LOG IN PAGE
 class LogInForm(FlaskForm):
   # Username field
   username = StringField(label=('Username'), validators=[
@@ -69,4 +69,19 @@ class LogInForm(FlaskForm):
   # Password field
   password = PasswordField(label=('Password'), validators=[
     InputRequired('Password is required')
+  ])
+
+
+# FORM FOR NEW POST PAGE
+class NewPostForm(FlaskForm):
+  # Description field
+  description = TextAreaField(label=('Description'), validators=[
+    InputRequired('Description is required'),
+    Length(min=1, max=500, message='Description must be between 1 and 500 characters')
+  ])
+
+  # Image field
+  image = FileField(label=('Image'), validators=[
+    InputRequired('Image is required'),
+    FileAllowed(['jpg', 'jpeg', 'png'], 'Supported image files are .jpg, .jpeg and .png')
   ])

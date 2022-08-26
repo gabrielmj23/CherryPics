@@ -64,6 +64,40 @@ def index():
   return render_template('index.html', carouselPosts = carouselPosts, posts = posts)
 
 
+# NEW POST ROUTE
+@app.route('/new', methods=['GET', 'POST'])
+@loginRequired
+def newPost():
+  form = appForms.NewPostForm()
+  # User reached via GET -> Show new post form
+  if request.method == 'GET':
+    return render_template('newpost.html', form = form)
+  
+  # User reached via POST -> Validate and save post in DB
+  else:
+    if form.validate_on_submit():
+      # Resize post image
+      postImage = Image.open(form.image.data)
+      postImage.thumbnail((800, 800))
+
+      # Generate unique filename and save
+      curDate = datetime.now()
+      savedFileName = 'static/images/posts/' + f'{curDate.day}-{curDate.month}-{curDate.year}_{curDate.hour}-{curDate.minute}-{curDate.second}_' + secure_filename(form.image.data.filename)
+      postImage.save(savedFileName, 'png')
+
+      # Save post in DB
+      db.execute('INSERT INTO posts (author_id, description, image, posted_on, like_count) VALUES (%s, %s, %s, %s, %s) RETURNING (id)',
+        (session['user_id'], form.description.data, savedFileName, curDate, 0))
+      dbConnection.commit()
+
+      # Send to post page
+      return redirect(f'/posts/{db.fetchone()[0]}')
+    
+    # Failed basic validation
+    else:
+      return render_template('newpost.html', form = form)
+
+
 # SIGN UP ROUTE
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
