@@ -61,7 +61,7 @@ def index():
     carouselPosts = secrets.SystemRandom().sample(posts, min(5, len(posts)))
 
   # Render index page
-  return render_template('index.html', logged_in = True, userId = session['user_id'], carouselPosts = carouselPosts, posts = posts)
+  return render_template('index.html', carouselPosts = carouselPosts, posts = posts)
 
 
 # SIGN UP ROUTE
@@ -144,3 +144,11 @@ def login():
     # Basic validation failed
     else:
       return render_template('login.html', form=form)
+
+
+# LOG OUT ROUTE
+@app.route('/logout', methods=['GET'])
+def logout():
+  # Clear session and redirect to login page
+  session.clear()
+  return redirect('/login')
