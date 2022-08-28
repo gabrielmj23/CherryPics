@@ -66,6 +66,41 @@ def index():
   return render_template('index.html', carouselPosts = carouselPosts, posts = posts)
 
 
+# TOGGLE LIKE ROUTE
+@app.route('/posts/<int:postId>/likes', methods=['POST'])
+@loginRequired
+def toggleLike(postId):
+  # Get like status from request
+  likeStatus = request.form.get('liked')
+
+  # Get post like count
+  db.execute('SELECT like_count FROM posts WHERE id = (%s)', (postId,))
+  dbConnection.commit()
+  postLikeCount = db.fetchone()[0]
+
+  # User hasn't liked post -> Add like to database and update post like count
+  if likeStatus == 'False':
+    # Insert new like into DB
+    db.execute('INSERT INTO likes (user_id, post_id) VALUES (%s, %s)', (session['user_id'], postId))
+    dbConnection.commit()
+
+    # Update post like count and reload page
+    db.execute('UPDATE posts SET like_count = (%s) WHERE id = (%s)', (postLikeCount + 1, postId))
+    dbConnection.commit()
+    return redirect(f'/posts/{postId}')
+  
+  # User has liked post -> Delete like from database and update post like count
+  else:
+    # Delete like from DB
+    db.execute('DELETE FROM likes WHERE user_id = (%s) AND post_id = (%s)', (session['user_id'], postId))
+    dbConnection.commit()
+
+    # Update post like count and reload page
+    db.execute('UPDATE posts SET like_count = (%s) WHERE id = (%s)', (postLikeCount - 1, postId))
+    dbConnection.commit()
+    return redirect(f'/posts/{postId}')
+
+
 # VIEW POST ROUTE
 @app.route('/posts/<int:postId>', methods=['GET'])
 @loginRequired
