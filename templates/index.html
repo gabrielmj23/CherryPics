@@ -13,21 +13,23 @@
         {% if carouselPosts|length < 1 %}
           <p class="text-mute mt-3">No posts yet.</p>
         {% else %} 
-          <div id="mainCarousel" class="carousel slide mt-3 mb-3" data-bs-ride="false">
+          <div id="mainCarousel" class="carousel slide mt-3 mb-4" data-bs-ride="false">
             <div class="carousel-indicators">
               {% for i in range(carouselPosts|length) %}
-                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="{{ '%s' % i|string }}" aria-label="{{ 'Slide %s' % (i+1)|string }}"></button>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="{{ '%s' % i|string }}" aria-label="{{ 'Slide %s' % (i+1)|string }}" class="{{ 'active' if i == 1 }}"></button>
               {% endfor %}
             </div>
 
             <div class="carousel-inner">
+              {% set postIdx = 1 %}
               {% for post in carouselPosts %} 
-                <div class="carousel-item">
-                  <img src="{{ '/%s' % post[2] }}" class="d-block w-100"/>
-                  <div class="carousel-caption d-none d-md-block">
-                    <a href="{{ '/posts/%s' % post[0] }}">{{ post[1] }}</a>
+                <div class="carousel-item {{ 'active' if postIdx == 1 }}">
+                  <img src="{{ '/%s' % post[2] }}" class="d-block img-fluid mx-auto" width="800px"/>
+                  <div class="carousel-caption d-none d-md-block text-bg-light mx-auto opacity-75" style="max-width: 800px;">
+                    <a href="{{ '/posts/%s' % post[0] }}" class="link-dark text-break">{{ post[1] }}</a>
                   </div>
                 </div>
+                {% set postIdx = postIdx + 1 %}
               {% endfor %}
             </div>
           </div>
