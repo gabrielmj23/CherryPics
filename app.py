@@ -10,6 +10,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from PIL import Image
+
 from loginRequired import loginRequired
 
 # Set up environment variables
@@ -51,9 +52,10 @@ def after_request(response):
 @loginRequired
 def index():
   # Get posts from database
-  db.execute('SELECT (id, description, image, like_count, posted_on) FROM posts ORDER BY (posted_on) DESC')
+  db.execute('SELECT id, description, image, like_count, posted_on FROM posts ORDER BY posted_on DESC')
   dbConnection.commit()
   posts = db.fetchall()
+  print(posts)
 
   # If there are posts, select five or less at random for carousel
   carouselPosts = []
@@ -62,6 +64,36 @@ def index():
 
   # Render index page
   return render_template('index.html', carouselPosts = carouselPosts, posts = posts)
+
+
+# VIEW POST ROUTE
+@app.route('/posts/<int:postId>', methods=['GET'])
+@loginRequired
+def viewPost(postId):
+  # Get post from database (if it doesn't exist, it'll be None)
+  db.execute('SELECT u.id, u.username, p.id, p.description, p.image, p.posted_on, p.like_count FROM posts AS p INNER JOIN users AS u ON p.author_id = u.id WHERE (p.id) = (%s)', (postId,))
+  dbConnection.commit()
+  urlPost = db.fetchone()
+  
+  # Get comments from post if exists
+  postComments = []
+  userLikes = None
+  if urlPost is not None:
+    db.execute('SELECT c.id, u.id, u.username, c.content, c.posted_on FROM comments AS c INNER JOIN users AS u ON c.author_id = u.id WHERE (c.post_id) = (%s)', (postId,))
+    dbConnection.commit()
+    postComments = db.fetchall()
+    
+    # Additionally, check if user likes post
+    db.execute('SELECT * FROM likes WHERE user_id = (%s) AND post_id = (%s)', (session['user_id'], postId))
+    dbConnection.commit()
+    userLikes = db.fetchone()
+    if userLikes is None:
+      userLikes = False
+    else:
+      userLikes = True
+
+  # Show post view page
+  return render_template('postview.html', post = urlPost, comments = postComments, liked = userLikes)
 
 
 # NEW POST ROUTE

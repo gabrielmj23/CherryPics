@@ -16,14 +16,14 @@
           <div id="mainCarousel" class="carousel slide mt-3 mb-3" data-bs-ride="false">
             <div class="carousel-indicators">
               {% for i in range(carouselPosts|length) %}
-                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="{{ '%d' % i }}" aria-label="{{ 'Slide %d' % i+1 }}"></button>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="{{ '%s' % i|string }}" aria-label="{{ 'Slide %s' % (i+1)|string }}"></button>
               {% endfor %}
             </div>
 
             <div class="carousel-inner">
               {% for post in carouselPosts %} 
                 <div class="carousel-item">
-                  <img src="{{ post[2] }}" class="d-block w-100"/>
+                  <img src="{{ '/%s' % post[2] }}" class="d-block w-100"/>
                   <div class="carousel-caption d-none d-md-block">
                     <a href="{{ '/posts/%s' % post[0] }}">{{ post[1] }}</a>
                   </div>
@@ -39,14 +39,17 @@
           </div>
           <div class="list-group" >
             {% for post in posts %}
-              <a href="{{ '/posts/%s' % post[0] }}" class="list-group-item list-group-item-action row">
-                <div class="col-5">
-                  <img src="{{ post[2] }}" class="d-block w-100" loading="lazy"/>
-                </div>
-                <div class="col-7">
-                  <h6>{{ post[1] }}</h6>
-                  <small>{{ post[4] }}</small>
-                  <small>Likes: {{ post[3] }}</small>
+              <a href="{{ '/posts/%s' % post[0] }}" class="list-group-item list-group-item-action">
+                <div class="row">
+                  <div class="col-5">
+                    <img src="{{ '/%s' % post[2] }}" class="img-fluid mx-start" width="550px" loading="lazy"/>
+                  </div>
+                  <div class="col-7 my-auto">
+                    <h5>{{ post[1] }}</h5>
+                    <small>Posted on: {{ post[4].strftime('%m/%d/%Y %H:%M:%S') }}</small>
+                    <br/>
+                    <small>Likes: {{ post[3] }}</small>
+                  </div>
                 </div>
               </a>
             {% endfor %}
