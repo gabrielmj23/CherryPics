@@ -41,7 +41,7 @@
             <div class="col-2"></div>
 
             <div class="col-8">
-              <form class="form-control text-start p-2 mt-3" method="post" action="{{ '/posts/%s/comments' % post[2] }}">
+              <form class="form-control text-start mt-3" method="post" action="{{ '/posts/%s/comments' % post[2] }}">
                 <h5>Add a comment</h5>
                 <textarea
                   id="content"
@@ -59,14 +59,14 @@
               {% if comments|length < 1 %} 
                 <h6 class="text-center p-3">No comments yet.</h6>
               {% else %} 
-                <div class="list-group">
+                <div class="list-group mb-3">
                   {% for comment in comments %}
                     <div class="list-group-item">
                       <h6><a href="{{ '/users/%s' % comment[1] }}">@{{ comment[2] }}</a></h6>
                       <p>{{ comment[3] }}</p>
-                      <small class="text-secondary">{{ comment[4] }}</small>
+                      <small class="text-secondary">{{ comment[4].strftime('%m/%d/%Y %H:%M:%S') }}</small>
                       {% if comment[1] == session.user_id %} 
-                        <form method="post" action="{{ '/posts/%s/comments/%s/delete' % post[2], comment[0] }}">
+                        <form method="post" action="{{ '/posts/%s/comments/%s/delete' % (post[2], comment[0]) }}">
                           <input id="deleteComment" name="deleteComment" type="hidden" value="True">
                           <button class="btn btn-danger">Delete comment</button>
                         </form>

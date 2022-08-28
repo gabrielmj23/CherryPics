@@ -101,6 +101,32 @@ def toggleLike(postId):
     return redirect(f'/posts/{postId}')
 
 
+# DELETE COMMENT ROUTE
+@app.route('/posts/<int:postId>/comments/<int:commentId>/delete', methods=['POST'])
+@loginRequired
+def deleteComment(postId, commentId):
+  # Delete comment from DB
+  db.execute('DELETE FROM comments WHERE id = (%s)', (commentId,))
+  dbConnection.commit()
+
+  # Reload page
+  return redirect(f'/posts/{postId}')
+
+
+# ADD COMMENT ROUTE
+@app.route('/posts/<int:postId>/comments', methods=['POST'])
+@loginRequired
+def addComment(postId):
+  # Insert comment into DB
+  curDate = datetime.now()
+  db.execute('INSERT INTO comments (author_id, post_id, content, posted_on) VALUES (%s, %s, %s, %s)',
+    (session['user_id'], postId, request.form.get('content'), curDate))
+  dbConnection.commit()
+
+  # Reload post page
+  return redirect(f'/posts/{postId}')
+
+
 # VIEW POST ROUTE
 @app.route('/posts/<int:postId>', methods=['GET'])
 @loginRequired
