@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block title %} 
+  {{ user[1] }}
+{% endblock %}
+
+{% block main %} 
+  <div class='container-fluid'>
+    <div class='row'>
+      <div class='col-1'></div>
+
+      <div class='col-10 text-center'>
+        {% if user is none %}
+          <h4 class="text-danger mt-3">User not found</h4>
+        {% else %}
+          <div class='row mt-3 border border-2 rounded-3 pt-3 pb-3'>
+            <div class='col-4'>
+              <img src="{{ '/%s' % user[3] }}" alt="{{ user[1] }}" class="img-fluid" width="225px"/>
+            </div>
+            <div class='col-8'>
+              <h4 class='text-start'>{{ user[1] }}</h4>
+              <p class='text-start'>{{ user[2] }}</p>
+              <p class='text-start text-muted mb-3'>{{ posts|length }} Post(s)</p>
+              {% if user[0] == session.user_id %} 
+                <form method="post" action="{{ '/users/%s/delete' % user[0]|string }}" class="text-start">
+                  <input id="delete" name="delete" type="hidden" value="True">
+                  <button class="btn btn-danger" type="submit">Delete account</button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+          <div className='row mt-4 border border-2 rounded-3'>
+            {% if posts|length == 0 %} 
+              <strong class="p-4">No posts yet.</strong>
+            {% else %}
+              <div class="list-group pt-3 mb-3">
+                {% for post in posts %} 
+                  <a href="{{ '/posts/%s' % post[0] }}" class="list-group-item list-group-item-action">
+                    <div class="row">
+                      <div class="col-5">
+                        <img src="{{ '/%s' % post[2] }}" class="img-fluid mx-start" width="500px" loading="lazy"/>
+                      </div>
+                      <div class="col-7 my-auto">
+                        <h5>{{ post[1] }}</h5>
+                        <small>Posted on: {{ post[3].strftime('%m/%d/%Y %H:%M:%S') }}</small>
+                        <br/>
+                        <small>Likes: {{ post[4] }}</small>
+                        {% if user[0] == session.user_id %} 
+                          <form method="post" action="{{ '/posts/%s/delete' % post[0] }}">
+                            <input id="delete" name="delete" type="hidden" value="True">
+                            <button class="btn btn-danger" type="submit">Delete post</button>
+                          </form>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </a>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div className='col-1'></div>
+    </div>
+  </div>
+{% endblock %}

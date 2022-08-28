@@ -55,7 +55,6 @@ def index():
   db.execute('SELECT id, description, image, like_count, posted_on FROM posts ORDER BY posted_on DESC')
   dbConnection.commit()
   posts = db.fetchall()
-  print(posts)
 
   # If there are posts, select five or less at random for carousel
   carouselPosts = []
@@ -125,6 +124,26 @@ def addComment(postId):
 
   # Reload post page
   return redirect(f'/posts/{postId}')
+
+
+# VIEW USER ROUTE
+@app.route('/users/<int:userId>', methods=['GET'])
+@loginRequired
+def viewUser(userId):
+  # Get user from database
+  db.execute('SELECT id, username, description, profile_pic FROM users WHERE id = (%s)', (userId,))
+  dbConnection.commit()
+  urlUser = db.fetchone()
+
+  # Get user's posts, if exists
+  userPosts = []
+  if urlUser is not None:
+    db.execute('SELECT id, description, image, posted_on, like_count FROM posts WHERE author_id = (%s)', (urlUser[0],))
+    dbConnection.commit()
+    userPosts = db.fetchall()
+  
+  # Render user page template
+  return render_template('userview.html', user = urlUser, posts = userPosts)
 
 
 # VIEW POST ROUTE
@@ -225,7 +244,7 @@ def signup():
         
         # Save user in DB and redirect to login
         db.execute('INSERT INTO users (username, password, description, profile_pic) VALUES (%s, %s, %s, %s)',
-          (form.username.data, encryptedPw, form.description.data, savedFileName + '.jpeg'))
+          (form.username.data, encryptedPw, form.description.data, savedFileName))
         dbConnection.commit()
         
         return redirect('/login')
