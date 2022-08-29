@@ -143,6 +143,9 @@ def deleteUser(userId):
     os.remove(os.path.join(os.getcwd(), postTuple[1]))
   dbConnection.commit()
 
+  # Update like count from posts where user has left a like
+  db.execute('UPDATE posts AS p SET like_count = like_count - 1 WHERE p.id IN (SELECT post_id FROM likes WHERE user_id = (%s) AND post_id = p.id)', (userId,))
+
   # Delete comments and likes from user
   db.execute('DELETE FROM comments WHERE author_id = (%s)', (userId,))
   db.execute('DELETE FROM likes WHERE user_id = (%s)', (userId,))
@@ -181,6 +184,27 @@ def viewUser(userId):
   
   # Render user page template
   return render_template('userview.html', user = urlUser, posts = userPosts)
+
+
+# DELETE POST ROUTE
+@app.route('/posts/<int:postId>/delete', methods=['POST'])
+@loginRequired
+def deletePost(postId):
+  # Delete from DB comments and likes corresponding to that post
+  db.execute('DELETE FROM comments WHERE post_id = (%s)', (postId,))
+  db.execute('DELETE FROM likes WHERE post_id = (%s)', (postId,))
+  dbConnection.commit()
+
+  # Delete post from DB
+  db.execute('DELETE FROM posts WHERE id = (%s) RETURNING image', (postId,))
+  dbConnection.commit()
+
+  # Delete image from server
+  postImage = db.fetchone()
+  os.remove(os.path.join(os.getcwd(), postImage[0]))
+
+  # Redirect to index page
+  return redirect('/')
 
 
 # VIEW POST ROUTE

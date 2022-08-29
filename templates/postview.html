@@ -32,6 +32,12 @@
                   <small>{{ post[6] }} like(s)</small>
                 </button>
               </form>
+              {% if post[0] == session.user_id %} 
+                <form method="post" action="{{ '/posts/%s/delete' % post[2] }}" class="text-end my-2">
+                  <input id="delete" name="delete" type="hidden" value="True">
+                  <button class="btn btn-danger">Delete post</button>
+                </form>
+              {% endif %}
             </div>
 
             <div class="col-2"></div>
