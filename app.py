@@ -126,6 +126,43 @@ def addComment(postId):
   return redirect(f'/posts/{postId}')
 
 
+# DELETE USER ROUTE
+@app.route('/users/<int:userId>/delete', methods=['POST'])
+@loginRequired
+def deleteUser(userId):  
+  # Get all posts from user and save id's and images
+  db.execute('SELECT id, image FROM posts WHERE author_id = (%s)', (userId,))
+  dbConnection.commit()
+  postList = db.fetchall()
+
+  # Delete comments and likes from deleted posts
+  for postTuple in postList:
+    db.execute('DELETE FROM comments WHERE post_id = (%s)', (postTuple[0],))
+    db.execute('DELETE FROM likes WHERE post_id = (%s)', (postTuple[0],))
+    # Delete post image
+    os.remove(os.path.join(os.getcwd(), postTuple[1]))
+  dbConnection.commit()
+
+  # Delete comments and likes from user
+  db.execute('DELETE FROM comments WHERE author_id = (%s)', (userId,))
+  db.execute('DELETE FROM likes WHERE user_id = (%s)', (userId,))
+  dbConnection.commit()
+
+  # Delete all posts from user
+  db.execute('DELETE FROM posts WHERE author_id = (%s)', (userId,))
+  dbConnection.commit()
+
+  # Delete user from DB and profile pic from server
+  db.execute('DELETE FROM users WHERE id = (%s) RETURNING profile_pic', (userId,))
+  dbConnection.commit()
+  userPfp = db.fetchone()
+  os.remove(os.path.join(os.getcwd(), userPfp[0]))
+
+  # Clear session and redirect to sign up page
+  session.clear()
+  return redirect('/signup')
+
+
 # VIEW USER ROUTE
 @app.route('/users/<int:userId>', methods=['GET'])
 @loginRequired
