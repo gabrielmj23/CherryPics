@@ -1,3 +1,4 @@
+from http.client import HTTPException
 import os
 import psycopg2
 import appForms
@@ -6,6 +7,7 @@ import secrets
 from flask import Flask, request, render_template, redirect, session
 from flask_session import Session
 from tempfile import mkdtemp
+from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -175,12 +177,15 @@ def viewUser(userId):
   dbConnection.commit()
   urlUser = db.fetchone()
 
+  # Show error page if user doesn't exist
+  if urlUser is None:
+    return render_template('error.html', errorMsg = 'User not found')
+
   # Get user's posts, if exists
   userPosts = []
-  if urlUser is not None:
-    db.execute('SELECT id, description, image, posted_on, like_count FROM posts WHERE author_id = (%s)', (urlUser[0],))
-    dbConnection.commit()
-    userPosts = db.fetchall()
+  db.execute('SELECT id, description, image, posted_on, like_count FROM posts WHERE author_id = (%s)', (urlUser[0],))
+  dbConnection.commit()
+  userPosts = db.fetchall()
   
   # Render user page template
   return render_template('userview.html', user = urlUser, posts = userPosts)
@@ -215,23 +220,26 @@ def viewPost(postId):
   db.execute('SELECT u.id, u.username, p.id, p.description, p.image, p.posted_on, p.like_count FROM posts AS p INNER JOIN users AS u ON p.author_id = u.id WHERE (p.id) = (%s)', (postId,))
   dbConnection.commit()
   urlPost = db.fetchone()
+
+  # Show error page if post not found
+  if urlPost is None:
+    return render_template('error.html', errorMsg = 'Post not found')
   
   # Get comments from post if exists
   postComments = []
   userLikes = None
-  if urlPost is not None:
-    db.execute('SELECT c.id, u.id, u.username, c.content, c.posted_on FROM comments AS c INNER JOIN users AS u ON c.author_id = u.id WHERE (c.post_id) = (%s)', (postId,))
-    dbConnection.commit()
-    postComments = db.fetchall()
+  db.execute('SELECT c.id, u.id, u.username, c.content, c.posted_on FROM comments AS c INNER JOIN users AS u ON c.author_id = u.id WHERE (c.post_id) = (%s)', (postId,))
+  dbConnection.commit()
+  postComments = db.fetchall()
     
-    # Additionally, check if user likes post
-    db.execute('SELECT * FROM likes WHERE user_id = (%s) AND post_id = (%s)', (session['user_id'], postId))
-    dbConnection.commit()
-    userLikes = db.fetchone()
-    if userLikes is None:
-      userLikes = False
-    else:
-      userLikes = True
+  # Additionally, check if user likes post
+  db.execute('SELECT * FROM likes WHERE user_id = (%s) AND post_id = (%s)', (session['user_id'], postId))
+  dbConnection.commit()
+  userLikes = db.fetchone()
+  if userLikes is None:
+    userLikes = False
+  else:
+    userLikes = True
 
   # Show post view page
   return render_template('postview.html', post = urlPost, comments = postComments, liked = userLikes)
@@ -359,3 +367,13 @@ def logout():
   # Clear session and redirect to login page
   session.clear()
   return redirect('/login')
+
+
+# ERROR WATCHING
+def errorhandler(e):
+  if not isinstance(e, HTTPException):
+    e = InternalServerError()
+  return render_template('error.html', errorMsg = e)
+
+for code in default_exceptions:
+  app.errorhandler(code)(errorhandler)
