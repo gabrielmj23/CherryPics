@@ -6,18 +6,17 @@
 
 {% block main %} 
   <div class='container-fluid'>
-    <div class='row'>
-      <div class='col-1'></div>
+    <div class='row justify-content-center'>
 
-      <div class='col-10 text-center'>
+      <div class='col-lg-10 text-center'>
         {% if user is none %}
           <h4 class="text-danger mt-3">User not found</h4>
         {% else %}
           <div class='row mt-3 border border-2 rounded-3 pt-3 pb-3'>
-            <div class='col-4'>
+            <div class='col-lg-4'>
               <img src="{{ '/%s' % user[3] }}" alt="{{ user[1] }}" class="img-fluid" width="225px"/>
             </div>
-            <div class='col-8'>
+            <div class='col-lg-8'>
               <h4 class='text-start'>{{ user[1] }}</h4>
               <p class='text-start'>{{ user[2] }}</p>
               <p class='text-start text-muted mb-3'>{{ posts|length }} Post(s)</p>
@@ -38,7 +37,7 @@
                   <a href="{{ '/posts/%s' % post[0] }}" class="list-group-item list-group-item-action">
                     <div class="row">
                       <div class="col-5">
-                        <img src="{{ '/%s' % post[2] }}" class="img-fluid mx-start" width="500px" loading="lazy"/>
+                        <img src="{{ '/%s' % post[2] }}" class="mx-start" style="max-width: 500px; height: auto; max-height: 250px;" loading="lazy"/>
                       </div>
                       <div class="col-7 my-auto">
                         <h5>{{ post[1] }}</h5>
@@ -61,7 +60,6 @@
         {% endif %}
       </div>
 
-      <div className='col-1'></div>
     </div>
   </div>
 {% endblock %}

@@ -6,24 +6,23 @@
 
 {% block main %}
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-1"></div>
+    <div class="row justify-content-center">
 
-      <div class="col-10 text-center">
+      <div class="col-lg-10 text-center">
         {% if carouselPosts|length < 1 %}
           <p class="text-mute mt-3">No posts yet.</p>
         {% else %} 
           <div id="mainCarousel" class="carousel slide mt-3 mb-4" data-bs-ride="false">
             <div class="carousel-indicators">
               {% for i in range(carouselPosts|length) %}
-                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="{{ '%s' % i|string }}" aria-label="{{ 'Slide %s' % (i+1)|string }}" class="{{ 'active' if i == 1 }}"></button>
+                <button type="button" class="{{ 'active' if loop.index == 1 }}" data-bs-target="#mainCarousel" data-bs-slide-to="{{ '%s' % i|string }}" aria-label="{{ 'Slide %s' % (i+1)|string }}" class="{{ 'active' if i == 1 }}"></button>
               {% endfor %}
             </div>
 
             <div class="carousel-inner">
               {% for post in carouselPosts %} 
                 <div class="carousel-item {{ 'active' if loop.index == 1 }}">
-                  <img src="{{ '/%s' % post[2] }}" class="d-block img-fluid mx-auto" style="max-width: 800px; max-height: 450px;"/>
+                  <img src="{{ '/%s' % post[2] }}" class="d-block img-fluid mx-auto" style="max-width: 650px; max-height: 450px;"/>
                   <div class="carousel-caption d-none d-md-block text-bg-light mx-auto opacity-75" style="max-width: 800px;">
                     <a href="{{ '/posts/%s' % post[0] }}" class="link-dark text-break">{{ post[1] }}</a>
                   </div>
@@ -49,10 +48,10 @@
             {% for post in posts %}
               <a href="{{ '/posts/%s' % post[0] }}" class="list-group-item list-group-item-action">
                 <div class="row">
-                  <div class="col-5">
+                  <div class="col-lg-5">
                     <img src="{{ '/%s' % post[2] }}" class="img-fluid mx-start" style="max-width: 550px; max-height: 325px;" loading="lazy"/>
                   </div>
-                  <div class="col-7 my-auto">
+                  <div class="col-lg-7 my-auto">
                     <h5>{{ post[1] }}</h5>
                     <small>Posted on: {{ post[4].strftime('%m/%d/%Y %H:%M:%S') }}</small>
                     <br/>
