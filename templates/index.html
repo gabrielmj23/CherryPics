@@ -21,17 +21,23 @@
             </div>
 
             <div class="carousel-inner">
-              {% set postIdx = 1 %}
               {% for post in carouselPosts %} 
-                <div class="carousel-item {{ 'active' if postIdx == 1 }}">
-                  <img src="{{ '/%s' % post[2] }}" class="d-block img-fluid mx-auto" width="800px"/>
+                <div class="carousel-item {{ 'active' if loop.index == 1 }}">
+                  <img src="{{ '/%s' % post[2] }}" class="d-block img-fluid mx-auto" style="max-width: 800px; max-height: 450px;"/>
                   <div class="carousel-caption d-none d-md-block text-bg-light mx-auto opacity-75" style="max-width: 800px;">
                     <a href="{{ '/posts/%s' % post[0] }}" class="link-dark text-break">{{ post[1] }}</a>
                   </div>
                 </div>
-                {% set postIdx = postIdx + 1 %}
               {% endfor %}
             </div>
+            <button class="carousel-control-prev carousel-dark" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next carousel-dark" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>          
           </div>
           
           <hr/>
@@ -44,7 +50,7 @@
               <a href="{{ '/posts/%s' % post[0] }}" class="list-group-item list-group-item-action">
                 <div class="row">
                   <div class="col-5">
-                    <img src="{{ '/%s' % post[2] }}" class="img-fluid mx-start" width="550px" loading="lazy"/>
+                    <img src="{{ '/%s' % post[2] }}" class="img-fluid mx-start" style="max-width: 550px; max-height: 325px;" loading="lazy"/>
                   </div>
                   <div class="col-7 my-auto">
                     <h5>{{ post[1] }}</h5>
