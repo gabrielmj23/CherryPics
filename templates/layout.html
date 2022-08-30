@@ -25,21 +25,27 @@
           </li>
 
           <li class='nav-item pe-2'>
-            <button type='button' class='btn btn-primary'>
-              <a class='text-light' href='/new'>New Post</a>
-            </button>
+            <a href="/new">
+              <button type="button" class="btn btn-primary">
+                New Post
+              </button>
+            </a>
           </li>
 
           <li class='nav-item pe-2'>
-            <button type='button' class='btn btn-success'>
-              <a class='text-light' href="{{ '/users/%s' % session['user_id'] }}">Your account</a>
-            </button>
+            <a href="{{ '/users/%s' % session.user_id }}">
+              <button type="button" class="btn btn-success">
+                Your account
+              </button>
+            </a>
           </li>
 
           <li class='nav-item'>
-            <button type='button' class='btn btn-danger' >
-              <a class='text-light' href="/logout">Log out</a>
-            </button>
+            <a href="/logout">
+              <button type="button" class="btn btn-danger">
+                Log out
+              </button>
+            </a>
           </li>
         </ul>
       </div>
