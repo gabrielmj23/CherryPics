@@ -5,12 +5,35 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import InputRequired, Length, EqualTo, ValidationError
 import re
 
+
+# CUSTOM VALIDATORS:
+# Function to validate username characters
+def validateUserChars(form, field):
+  excluded = " ?!¿¡'^&/(){}[]=$#<>*"
+  for char in excluded:
+    if char in field.data:
+      raise ValidationError(f'Character "{char}" is not allowed in username')
+
+# Function to validate password structure
+def validatePasswordStructure(form, field):
+  # Check invalid characters
+  excluded = " -+'\""
+  for char in excluded:
+    if char in field.data:
+      raise ValidationError(f'Character {char} is not allowed in password')
+
+  # Enforce password security
+  pwLayout = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{8,15}$")
+  if not re.fullmatch(pwLayout, field.data):
+    raise ValidationError("Password needs a lowercase and uppercase letter, a number and a special character")
+
 # FORM FOR SIGN UP PAGE
 class SignUpForm(FlaskForm):
   # Username field
   username = StringField(label=('Username'), validators=[
     InputRequired('Username is required'),
-    Length(min=1, max=20, message='Username can\'t be longer than 20 characters')
+    Length(min=1, max=20, message='Username can\'t be longer than 20 characters'),
+    validateUserChars
   ])
 
   # Description field
@@ -28,6 +51,7 @@ class SignUpForm(FlaskForm):
   password = PasswordField(label=('Password'), validators=[
     InputRequired('Password is required'),
     Length(min=8, max=15, message='Password must be between 8 and 15 characters'),
+    validatePasswordStructure
   ])
 
   # Password confirmation field
@@ -36,27 +60,6 @@ class SignUpForm(FlaskForm):
     Length(min=8, max=15, message='Password must be between 8 and 15 characters'),
     EqualTo('password', 'Password and confirmation must match')
   ])
-
-  # Custom validators:
-  # Function to validate username characters
-  def validateUserChars(self, username):
-    excluded = " ?!¿¡'^&/(){}[]=$#<>*"
-    for char in excluded:
-      if char in self.username.data:
-        raise ValidationError(f'Character {char} is not allowed in username')
-
-  # Function to validate password structure
-  def validatePasswordStructure(self, password):
-    # Check invalid characters
-    excluded = " -+'\""
-    for char in excluded:
-      if char in self.password.data:
-        raise ValidationError(f'Character {char} is not allowed in password')
-
-    # Enforce password security
-    pwLayout = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{8,15}$")
-    if not re.fullmatch(pwLayout, self.password.data):
-      raise ValidationError("Password needs a lowercase and uppercase letter, a number and a special character")
 
 
 # FORM FOR LOG IN PAGE

@@ -160,8 +160,9 @@ def deleteUser(userId):
   # Delete user from DB and profile pic from server
   db.execute('DELETE FROM users WHERE id = (%s) RETURNING profile_pic', (userId,))
   dbConnection.commit()
-  userPfp = db.fetchone()
-  os.remove(os.path.join(os.getcwd(), userPfp[0]))
+  userPfp = db.fetchone()[0]
+  if userPfp != 'static/images/users/default.png':
+    os.remove(os.path.join(os.getcwd(), userPfp))
 
   # Clear session and redirect to sign up page
   session.clear()
@@ -320,7 +321,7 @@ def signup():
       
       else:
         # Username is in use
-        form.errors['db'] = ['Username is already in use']
+        form.username.errors.append('Username is already in use')
     
         # Re-render
         return render_template('signup.html', form=form)
@@ -348,7 +349,7 @@ def login():
       
       # Check for login errors
       if foundUser == None or not check_password_hash(foundUser[2], request.form.get("password")):
-        form.errors['db'] = ['Wrong username/password']
+        form.password.errors.append('Wrong username or password')
         return render_template('login.html', form = form)
 
       # If valid, save user session and send to home page
