@@ -1,6 +1,7 @@
 # Prevent uploaded images from being committed
-static/images/users/
-static/images/posts/
+static/images/users/*
+!static/images/users/default.png
+static/images/posts/*
 
 # Taken from https://github.com/github/gitignore/blob/main/Python.gitignore
 
