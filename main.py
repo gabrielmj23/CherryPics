@@ -265,7 +265,7 @@ def newPost():
       # Generate unique filename and save
       curDate = datetime.now()
       savedFileName = 'static/images/posts/' + f'{curDate.day}-{curDate.month}-{curDate.year}_{curDate.hour}-{curDate.minute}-{curDate.second}_' + secure_filename(form.image.data.filename)
-      postImage.save(savedFileName, 'png')
+      postImage.save('/' + savedFileName, 'png')
 
       # Save post in DB
       db.execute('INSERT INTO posts (author_id, description, image, posted_on, like_count) VALUES (%s, %s, %s, %s, %s) RETURNING (id)',
@@ -310,7 +310,7 @@ def signup():
           # Generate unique filename and save
           curDate = datetime.now()
           savedFileName = 'static/images/users/' + f'{curDate.day}-{curDate.month}-{curDate.year}_{curDate.hour}-{curDate.minute}-{curDate.second}_' + secure_filename(form.profile_pic.data.filename)
-          profilePic.save(savedFileName, 'jpeg')
+          profilePic.save('/'+ savedFileName, 'jpeg')
         
         # Save user in DB and redirect to login
         db.execute('INSERT INTO users (username, password, description, profile_pic) VALUES (%s, %s, %s, %s)',
