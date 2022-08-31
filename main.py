@@ -381,4 +381,4 @@ for code in default_exceptions:
 
 # START APPLICATION
 if __name__ == '__main__':
-  app.run(debug=False, port=os.getenv('PORT', default=5000))
+  app.run(debug=False, host='0.0.0.0', port=os.getenv('PORT', default=5000))
