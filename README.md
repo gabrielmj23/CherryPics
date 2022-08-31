@@ -21,7 +21,7 @@ For future plans, I'd like to add the ability to update user information, post d
 - PostgreSQL and Psycopg2 (Database and ORM)
 
 ## File overview:
-### [app.py](app.py)
+### [main.py](main.py)
 Main Flask application file, initiates database connection and then declares all the routes with their corresponding methods. These routes usually make some database queries according to the user's requirement, and then render a template or redirect to a different route.
 
 ### [loginRequired.py](loginRequired.py)
