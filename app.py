@@ -1,4 +1,3 @@
-from http.client import HTTPException
 import os
 import psycopg2
 import appForms
